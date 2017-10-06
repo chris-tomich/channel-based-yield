@@ -19,8 +19,9 @@ func iterateItemsWithYield() chan int {
 
 // BenchmarkChannelYield benchmarks the pattern for using a channel like a C# yield.
 func BenchmarkChannelYield(b *testing.B) {
-	c := iterateItemsWithYield()
 	for i := 0; i < b.N; i++ {
+		c := iterateItemsWithYield()
+
 		sum := 0
 
 		for myNum := range c {
