@@ -5,7 +5,7 @@ import (
 )
 
 func iterateItemsWithYield() chan int {
-	c := make(chan int)
+	c := make(chan int, 1000)
 
 	go (func() {
 		for i := 0; i < 1000; i++ {
@@ -15,6 +15,16 @@ func iterateItemsWithYield() chan int {
 	})()
 
 	return c
+}
+
+func iterateItemsWithoutYield() []int {
+	ii := make([]int, 0, 1000)
+
+	for i := 0; i < 1000; i++ {
+		ii = append(ii, i)
+	}
+
+	return ii
 }
 
 // BenchmarkChannelYield benchmarks the pattern for using a channel like a C# yield.
@@ -33,10 +43,12 @@ func BenchmarkChannelYield(b *testing.B) {
 // BenchmarkStandardLoop is just a standard loop.
 func BenchmarkStandardLoop(b *testing.B) {
 	for i := 0; i < b.N; i++ {
+		ii := iterateItemsWithoutYield()
+
 		sum := 0
 
-		for i := 0; i < 1000; i++ {
-			sum += i
+		for myNum := range ii {
+			sum += myNum
 		}
 	}
 }
